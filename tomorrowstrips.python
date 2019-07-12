@@ -1,0 +1,51 @@
+#!/usr/bin/python
+
+import csv
+import sys
+import datetime
+import xlrd
+
+#input number you want to search
+#number = input('Enter date to find\n')
+now = datetime.datetime.now()
+exceltup = (now.year, now.month, now.day)
+today = int(xlrd.xldate.xldate_from_date_tuple((exceltup),0))
+tomorrow = today + 3
+
+with open('email.csv') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        if row['Start Date'] == str(tomorrow):
+            print(row['Tripper 1']+",\n")
+            file1 = open(row['Start Date']) 
+            file1.write(row['Tripper 1'])
+            file1.write("\n\nYou're leading the ")
+            file1.write(row['Trip'])
+            file1.write(" tomorrow for ")
+            file1.write(row['Days on Trip'])
+            file1.write(" days.\n")
+            file1.write("\nHere's what you'll need:\n")
+            file1.write("\nDish Kits: ")
+            file1.write(row['Dish Kits'])
+            file1.write("\nAquatabs: ")
+            file1.write(row['Aquatabs'])
+            file1.write("\nBoats: ")
+            file1.write(row['Boats'])
+            file1.write("\nTents: ")
+            file1.write(row['Tents'])
+            file1.write("\nWhistles: ")
+            file1.write(row['Whistles'])
+            file1.write("\nPaper bags: ")
+            file1.write(row['Paper Bags'])
+            file1.write("\nRolls of toilet paper: ")
+            file1.write(row['Toilet Paper'])
+            file1.write("\nBarrels: ")
+            file1.write(row['Barrels'])
+            file1.write("\n")
+            if row['cthulhu'] == "yes":
+                    file1.write("\nPraise be to Cthulhu,")
+                    file1.write("\nStu\n")
+            elif row['cthulhu'] != "yes":
+                    file1.write("\nSincerely,")
+                    file1.write("\nStu\n")
+            file1.close()
