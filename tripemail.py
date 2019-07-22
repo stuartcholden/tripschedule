@@ -10,7 +10,7 @@ to_address = "tripdirector@kandalore.com"
 now = datetime.datetime.now()
 exceltup = (now.year, now.month, now.day)
 today = int(xlrd.xldate.xldate_from_date_tuple((exceltup),0))
-tomorrow = today + 1
+tomorrow = today
 dayleavingtext = "tomorrow"
 intwodays = today + 2
 inthreedays = today + 3
@@ -27,7 +27,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 subject = "Subject: Trip " + row['TripID'] + ", " + dayleavingtext + "\n\n"
 
 
-                if row['Tripper 1'] == "PJ 1":
+                if row['Tripper 1'].startswith('PJ'):
                     message1 = "Hi " + row['Staff1EmailName'] + " & " + row['Staff2EmailName'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext + "."
                 elif row['Tripper 2'] == "":
                     message1 = "Hi " + row['Tripper 1'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext
@@ -44,7 +44,12 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     staff2 = ""
 
-                gear = " Here's what you'll need:\n\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nPaper bags: " + row['Paper Bags'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper'] + "\nBarrels: " + row['Barrels'] + "\n"
+                gear = " Here's what you'll need:\n\nBarrels: " + row['Barrels'] + "\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
+
+                if not row['Paper Bags'] == "":
+                    paperbags = "Paper bags: " + row['Paper Bags'] + "\n"
+                else:
+                    paperbags = ""
 
                 if not row['Booking Reference'] == "":
                     bookingreference = "Booking Reference Number: " + row['Booking Reference'] + "\n"
@@ -189,17 +194,22 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     signoff = "\n\nSincerely,\n\nStu"
 
-                if row['Tripper 1'] == "PJ 1":
-                    message = subject+message1+gear+bookingreference+sites+spot+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
+                if row['Tripper 1'].startswith('PJ'):
+                    message = subject+message1+gear+paperbags+bookingreference+sites+spot+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
                 else:
-                    message = subject+message1+staff1+staff2+gear+bookingreference+sites+spot+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
+                    message = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+spot+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
                 print(message)
 
+
+#I think all the below lines can be modified to use a while loop and just send a message to any email cell that is filled out
+                if row['Tripper 1'].startswith('PJ'):
+#                    server.sendmail(from_address,row['email1']+", "row['email'2],message)
+                    print("Send to: " + row['email1'] + ", " + row['email2'])
                 if row['email1'] == "":
                     server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper")
                     print("Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
                 else:
-                    server.sendmail(from_address,row['email1'],message)
+                    server.sendmail(from_address,to_address,message)
 
                 if not row['email2'] == "":
                     server.sendmail(from_address,to_address+", "+to_address,message)
