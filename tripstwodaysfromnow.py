@@ -1,4 +1,4 @@
-import csv, smtplib, ssl, xlrd, datetime
+import csv, smtplib, ssl, xlrd, datetime, subprocess
 
 from_address = "kandalore.trippers@gmail.com"
 password = "shalominthehome"
@@ -10,7 +10,7 @@ to_address = "tripdirector@kandalore.com"
 now = datetime.datetime.now()
 exceltup = (now.year, now.month, now.day)
 today = int(xlrd.xldate.xldate_from_date_tuple((exceltup),0))
-tomorrow = today
+tomorrow = today + 1
 dayleavingtext = "tomorrow"
 intwodays = today + 2
 inthreedays = today + 3
@@ -61,12 +61,27 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     sites = ""
 
+                if not row['Drop Off Required'] == "":
+                    dropoff = "Drop off: " + row['Drop Off Required'] + "\n"
+                else:
+                    dropoff = ""
+
+                if not row['Pick Up Required'] == "":
+                    pickup = "Pick up: " + row['Pick Up Required'] + "\n"
+                else:
+                    pickup = "" 
+
                 if not row['SPOT'] == "":
                     spot = "SPOT: " + row['SPOT'] + "\n"
                 else:
                     spot = ""
 
-                campers = "\n\nYour campers are:\n\n"
+                if not row['Emerg Money'] == "":
+                    money = "Emergency Money: " + row['Emerg Money'] + "\n"
+                else:
+                    money = ""
+
+                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\n"
 
                 if not row['Camper 1'] == "":
                     camper1 = row['Camper 1']+ "\n"
@@ -190,29 +205,44 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                     camper30 = ""
 
                 if row['Praise be to Cthulhu, devourer of young love and purveyor of discounted leather jackets'] == "yes":
-                    signoff = "\n\nPraise be to Cthulhu,\n\nStu"
+#                    signoff = subprocess.Popen("fortune fortune/cthulhu", stdout = subprocess.PIPE)
+                    signoff = "\n\nPraise be to Cthulhu, devourer of young love and purveryor of fine discounted leather jackets,\n\nStu"
                 else:
                     signoff = "\n\nSincerely,\n\nStu"
 
-                if row['Tripper 1'].startswith('PJ'):
-                    message = subject+message1+gear+paperbags+bookingreference+sites+spot+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
-                else:
-                    message = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+spot+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
-                print(message)
+#                if row['Tripper 1'].startswith('PJ'):
 
+                pjmessage = subject+message1+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
+
+#                else:
+
+                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+camper1+camper2+camper3+camper4+camper5+camper6+camper7+camper8+camper9+camper10+camper11+camper12+camper13+camper14+camper15+camper16+camper17+camper18+camper19+camper20+camper21+camper22+camper23+camper24+camper25+camper26+camper27+camper28+camper29+camper30+signoff
+                print(coremessage)
+
+#                expmessage = 
+
+#                x2message = 
 
 #I think all the below lines can be modified to use a while loop and just send a message to any email cell that is filled out
                 if row['Tripper 1'].startswith('PJ'):
-#                    server.sendmail(from_address,row['email1']+", "row['email'2],message)
+                    print(pjmessage)
+                    server.sendmail(from_address,row['email1']+", "+row['email2'],pjmessage)
                     print("Send to: " + row['email1'] + ", " + row['email2'])
                 if row['email1'] == "":
                     server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper")
                     print("Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
+                if row['Section'] == "Exp":
+                    print(expmessage)
+                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
+                if row['Section'] == "X2":
+                    print(x2message)
+                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
                 else:
-                    server.sendmail(from_address,to_address,message)
+                    print(coremessage)
+                    server.sendmail(from_address,row['email1'],coremessage)
 
-                if not row['email2'] == "":
-                    server.sendmail(from_address,to_address+", "+to_address,message)
+#                if not row['email2'] == "":
+#                    server.sendmail(from_address,row['email2'],message)
 
 def send_me_a_test_email():
     context = ssl.create_default_context()

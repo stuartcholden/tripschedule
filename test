@@ -1,0 +1,8 @@
+import subprocess
+
+powerlevel = "ninethousand"
+
+if powerlevel == "ninethousand":
+
+    signoff = subprocess.check_output(["fortune", "./fortune/cthulhu"],shell=True,universal_newlines=True)
+    print(signoff)

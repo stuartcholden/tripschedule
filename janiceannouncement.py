@@ -2,7 +2,7 @@ import csv, smtplib, ssl, xlrd, datetime
 
 from_address = "kandalore.trippers@gmail.com"
 password = "shalominthehome"
-to_address = "tripdirector@kandalore.com"
+to_address = "janice@kandalore.com"
 
 
 #input number you want to search
@@ -10,14 +10,14 @@ to_address = "tripdirector@kandalore.com"
 now = datetime.datetime.now()
 exceltup = (now.year, now.month, now.day)
 today = int(xlrd.xldate.xldate_from_date_tuple((exceltup),0))
-tomorrow = today + 10
-dayleavingtext = "tomorrow"
-intwodays = today + 11
-inthreedays = today + 12
+tomorrow = today + 1
+
+intwodays = today + 2
+inthreedays = today + 3
 
 
 context = ssl.create_default_context()
-with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+with smtplib.SMTP_SSL(host='smtp.gmail.com', port=465, context=context) as server:
     server.login(from_address, password)
     with open("email.csv",encoding="utf-8") as file:
         reader = csv.DictReader(file)
@@ -28,15 +28,15 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         message4 = "\n\nThe day after that:\n\n"
         for row in reader:
             if row['Start Date'] == str(today):
-                message1 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + " on the " + row['Route'] + ", \n"
+                message1 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + "s on the " + row['Route'] + ", \n"
 
             if row['Start Date'] == str(tomorrow):
-                message2 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + " on the " + row['Route'] + ", \n"
+                message2 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + "s on the " + row['Route'] + ", \n"
 
             if row['Start Date'] == str(intwodays):
-                message3 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + " on the " + row['Route'] + ", \n"
+                message3 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + "s on the " + row['Route'] + ", \n"
 
             if row['Start Date'] == str(inthreedays):
-                message4 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + " on the " + row['Route'] + ", \n"
+                message4 += row['TripID'] + " - " + row['Tripper 1'] + " and the " + row['Section'] + "s on the " + row['Route'] + ", \n"
 
         server.sendmail(from_address,to_address,subject+message1+message2+message3+message4)
