@@ -21,18 +21,24 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     server.login(from_address, password)
     with open("email.csv",encoding="utf-8") as file:
         reader = csv.DictReader(file)
+        subject = "Subject: PJ Girls Trips that haven't left yet\n\n"
+#        greeting = "Hi " + row['SectionHeadName'] + ",\n\n"
+        greeting = "Hi Sophie,\n\n"
+        print(subject + greeting)
         for row in reader:
             if row['Section'] == "PJG" and row['Start Date'] >= str(today):
-                subject = "Subject: PJ Girls Trips that haven't left yet\n\n"
-                greeting = "Hi " + row['SectionHeadName'] + ",\n\n"
-                message1 = row['TripID'] + row['Tripper 1'] + row['Route']
+                message1 = row['TripID'] + " " + row['Route'] + "\n\n"
+                tripper = "Tripper: " + row['Tripper 1'] + "\n"
+                staff = "Staff: " + row['Staff 1'] + "\n\n"
+                dates = "Dates: " + row['Start Date'] + " to " + row['End Date'] + "\n\n"
+                campers = "Campers:\n"
 
-                for i in range(30):
-                    if row['Camper {i}'] != "":
-                        campers = "\n" + row['Camper {i}']
+                for i in range(1, 30):
+                    if row['Camper '+ str(i)] != "":
+                        campers += row['Camper '+ str(i)] + "\n"
                     else:
-                        campers = ""
+                        campers += ""
 
-                message = subject + greeting + message1 + campers + "\n"
+                message = message1 + dates + tripper + staff + campers + "\n"
 #        server.sendmail(from_address,to_address,message
                 print(message)
