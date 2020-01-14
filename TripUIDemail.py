@@ -1,8 +1,18 @@
-import csv, smtplib, ssl, xlrd, datetime, subprocess
+import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse
 
 from_address = "kandalore.trippers@gmail.com"
 password = "shalominthehome"
 to_address = "tripdirector@kandalore.com"
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-t', '--test', action='store_true', help='Testing mode. All emails are sent to tripdirector@kandalore.com')
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+if args.test is True:
+    print('Wow it worked')
 
 
 #input number you want to search
@@ -77,6 +87,13 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     spot = ""
 
+                if str(row['Days on Trip']) == str(12):
+                    extrasatbat = "Extra Sat Phone Battery: 1\n"
+                if int(row['Days on Trip']) >= 20:
+                    extrasatbat = "Extra Sat Phone Batteries: 2\n"
+                else:
+                    extrasatbat = "wut\n"
+
                 if not row['Emerg Money'] == "":
                     money = "Emergency Money: " + row['Emerg Money'] + "\n"
                 else:
@@ -96,17 +113,30 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                     signoff = "\n\nSincerely,\n\nStu"
 
                 pjmessage = subject+message1+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
-                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
+                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+campers+signoff
+                errormessage = subject+"This is the catchall function. " + row['Tripper 1'] + " has not received this message."
+                noleadtripper = subject + "Trip " + row['TripID'] + " does not have an email for the lead tripper."
 
                 if row['Tripper 1'].startswith('PJ'):
-                    server.sendmail(from_address,['row['email1']', 'row['email2']'],pjmessage)
+                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage)
+
                 if row['email1'] == "":
-                    server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
+                    server.sendmail(from_address,row['tripdirectoremail'],noleadtripper)
+
                 if row['Section'] == "Exp":
-                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
-                if row['Section'] == "X2":
-                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
-                if row['Route'] == "Ghost":
-                    server.sendmail(from_address,"michaelseaboyer@hotmail.com",pjmessage)
-                else:
                     server.sendmail(from_address,row['email1'],coremessage)
+                    server.sendmail(from_address,row['email2'],coremessage)
+
+                if row['Section'] == "X2":
+                    server.sendmail(from_address,[row['email1'], row['email2']],"NOT TRUE")
+
+                if row['Route'] == "Ghost" and args.test is False:
+                    server.sendmail(from_address,row['x2directoremail'],pjmessage)
+                elif row['Route'] == "Ghost":
+                    server.sendmail(from_address,row['tripdirectoremail'],pjmessage)
+
+                else:
+                    server.sendmail(from_address,row['tripdirectoremail'],errormessage)
+
+                if args.test is True:
+                    print('Wow it worked')

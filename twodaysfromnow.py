@@ -98,7 +98,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
 
                 if row['Tripper 1'].startswith('PJ'):
-                    server.sendmail(from_address,['row['email1']', 'row['email2']'],pjmessage)
+                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage)
                 if row['email1'] == "":
                     server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
                 if row['Section'] == "Exp":
