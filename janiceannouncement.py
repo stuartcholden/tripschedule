@@ -1,7 +1,7 @@
 import csv, smtplib, ssl, xlrd, datetime
 
 from_address = "kandalore.trippers@gmail.com"
-password = "shalominthehome"
+password = "qbapiwrhofauuvtu"
 to_address = ['tripdirector@kandalore.com', 'stuart.c.holden@gmail.com']
 
 

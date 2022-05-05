@@ -1,7 +1,7 @@
 import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse
 
 from_address = "kandalore.trippers@gmail.com"
-password = "shalominthehome"
+password = "qbapiwrhofauuvtu"
 to_address = "tripdirector@kandalore.com"
 
 my_parser = argparse.ArgumentParser()
