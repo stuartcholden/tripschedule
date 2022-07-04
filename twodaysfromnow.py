@@ -1,7 +1,7 @@
 import csv, smtplib, ssl, xlrd, datetime, subprocess
 
 from_address = "kandalore.trippers@gmail.com"
-password = "qbapiwrhofauuvtu"
+password = "canhnxqvxgdllpxh"
 to_address = "tripdirector@kandalore.com"
 
 
@@ -81,7 +81,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     money = ""
 
-                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\n"
+                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\n" + row['Cabin'] + "\n\n"
 
                 for i in range(1, 30):
                     if row['Camper ' + str(i)] != "":
@@ -94,11 +94,9 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     signoff = "\n\nSincerely,\n\nStu"
 
-                pjmessage = subject+message1+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
+                pjmessage = subject+message1+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+campers+signoff
                 coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
 
-                if row['Tripper 1'].startswith('PJ'):
-                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage)
                 if row['email1'] == "":
                     server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
                 if row['Section'] == "Exp":
@@ -107,5 +105,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                     server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
                 if row['Route'] == "Ghost":
                     server.sendmail(from_address,"michaelseaboyer@hotmail.com",pjmessage)
+                if row['Section'] == "PG" or row['Section'] == "JG" or row['Section'] == "PB" or row['Section'] == "JB":
+                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage)
                 else:
-                    server.sendmail(from_address,row['email1'],coremessage)
+                    server.sendmail(from_address,row['email1'],coremessage.encode('utf-8'))

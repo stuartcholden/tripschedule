@@ -1,7 +1,7 @@
-import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse
+import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse, n2w
 
 from_address = "kandalore.trippers@gmail.com"
-password = "qbapiwrhofauuvtu"
+password = "canhnxqvxgdllpxh"
 to_address = "tripdirector@kandalore.com"
 
 my_parser = argparse.ArgumentParser()
@@ -37,13 +37,15 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
 
                 subject = "Subject: Trip " + row['TripID'] + ", " + dayleavingtext + "\n\n"
 
+                if not row['TripID'] == "":
+                    daysuntildeparture = int(row['Start Date']) - today
 
                 if row['Tripper 1'].startswith('PJ'):
                     message1 = "Hi " + row['Staff1EmailName'] + " & " + row['Staff2EmailName'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext + "."
                 elif row['Tripper 2'] == "":
                     message1 = "Hi " + row['Tripper 1'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext
                 else:
-                    message1 = "Hi " + row['Tripper 1'] + " & " + row['Tripper 2'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext
+                    message1 = "Hi " + row['Tripper 1'] + " & " + row['Tripper 2'] + ",\n\nYou're leading the " + row['Route'] + " " + "in " + str(n2w.convert(daysuntildeparture)) + " days"
 
                 if not row['Staff1DisplayName'] == "":
                     staff1 = " with " + row['Staff1DisplayName']
@@ -57,10 +59,10 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
 
                 gear = " Here's what you'll need:\n\nBarrels: " + row['Barrels'] + "\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
 
-                if not row['Paper Bags'] == "":
-                    paperbags = "Paper bags: " + row['Paper Bags'] + "\n"
+                if not row['Menstrual Bags'] == "":
+                    menstrual = "Menstrual bags: " + row['Menstrual Bags'] + "\n"
                 else:
-                    paperbags = ""
+                    menstrual = ""
 
                 if not row['Booking Reference'] == "":
                     bookingreference = "Booking Reference Number: " + row['Booking Reference'] + "\n"
@@ -112,8 +114,8 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     signoff = "\n\nSincerely,\n\nStu"
 
-                pjmessage = subject+message1+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
-                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+campers+signoff
+                pjmessage = subject+message1+gear+menstrual+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
+                coremessage = subject+message1+staff1+staff2+gear+menstrual+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+campers+signoff
                 errormessage = subject+"This is the catchall function. " + row['Tripper 1'] + " has not received this message."
                 noleadtripper = subject + "Trip " + row['TripID'] + " does not have an email for the lead tripper."
 
