@@ -25,6 +25,7 @@ dayleavingtext = "in two days"
 intwodays = today + 2
 inthreedays = today + 3
 
+section = input("Enter a Section:\n")
 
 context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
@@ -32,27 +33,26 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     with open("email.csv",encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['Section'] == "Path":
-
-                trips = (row['TripID'])
+            if row['Section'] == section:
 
                 subject = "Subject:" + row['Section'] + " Section Trips" + "\n\n"
 
                 if not row['TripID'] == "":
-                    message1 = "Hi " + row['SectionHeadName'] + ",\n\nThese are the trips in your section:"
+                    message1 = "Hi " + row['SectionHeadName'] + ",\n\nThese are the trips in your section as of " + row['tripscheduleversion'] + ":\n"
 
-                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\n"
+                for row in reader:
+                    if row['Section'] == section:
+                        message1 += "\n\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + str(xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")) + " to " + str(xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d")) + "\n" + "Tripper: " + row['Tripper 1'] + "\n" + "Staff: " + row['Staff 1'] + "\n" + "\nCabin: " + row['Cabin'] + "\n"
 
-                for i in range(1, 30):
-                    if row['Camper ' + str(i)] != "":
-                        campers += row['Camper ' + str(i)] + "\n"
-                    else:
-                        campers += ""
+                        for i in range(1, 30):
+                            if row['Camper ' + str(i)] != "":
+                                message1 += row['Camper ' + str(i)] + "\n"
+                            else:
+                                message1 += ""
 
                 signoff = "\n\nSincerely,\n\nStu"
 
-                coremessage = subject+message1+campers+signoff
+                coremessage = subject+message1+signoff
                 errormessage = subject+"This is the catchall function. " + row['SectionHeadName'] + " has not received this message."
-                noleadtripper = subject + "Trip " + row['TripID'] + " does not have an email for the lead tripper."
 
-                server.sendmail(from_address,[row['SectionHeadEmail']],coremessage.encode('utf-8'))
+        server.sendmail(from_address,"tripdirector@kandalore.com",coremessage.encode('utf-8'))
