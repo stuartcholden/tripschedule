@@ -25,7 +25,6 @@ dayleavingtext = "in two days"
 intwodays = today + 2
 inthreedays = today + 3
 
-tripUID = input("Enter a trip UID:\n")
 
 context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
@@ -33,7 +32,9 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     with open("email.csv",encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['TripID'] == tripUID:
+            if row['Section'] == "Path":
+
+                trips = (row['TripID'])
 
                 subject = "Subject:" + row['Section'] + " Section Trips" + "\n\n"
 
@@ -48,31 +49,10 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                     else:
                         campers += ""
 
-                if row['Praise be to Cthulhu, devourer of young love and purveyor of discounted leather jackets'] == "yes":
-                    signoff = "\n\nPraise be to Cthulhu, devourer of young love and purveryor of fine discounted leather jackets,\n\nStu"
-                else:
-                    signoff = "\n\nSincerely,\n\nStu"
+                signoff = "\n\nSincerely,\n\nStu"
 
                 coremessage = subject+message1+campers+signoff
                 errormessage = subject+"This is the catchall function. " + row['SectionHeadName'] + " has not received this message."
                 noleadtripper = subject + "Trip " + row['TripID'] + " does not have an email for the lead tripper."
 
-                if not row['TripID'] == "":
-                    server.sendmail(from_address,[row['SectionHeadEmail']],coremessage)
-
-                if row['email1'] == "":
-                    server.sendmail(from_address,row['tripdirectoremail'],noleadtripper)
-
-                if row['Section'] == "Exp":
-                    server.sendmail(from_address,row['SectionHeadEmail'],coremessage)
-                    server.sendmail(from_address,row['email2'],coremessage)
-
-                if row['Section'] == "X2":
-                    server.sendmail(from_address,[row['email1'], row['email2']],"NOT TRUE")
-
-
-                else:
-                    server.sendmail(from_address,row['tripdirectoremail'],errormessage)
-
-                if args.test is True:
-                    print('Wow it worked')
+                server.sendmail(from_address,[row['SectionHeadEmail']],coremessage.encode('utf-8'))
