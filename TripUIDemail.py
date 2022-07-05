@@ -14,6 +14,7 @@ print(vars(args))
 if args.test is True:
     print('Wow it worked')
 
+path = "/Users/stu/Documents/Tripping/Schedule.xlsm"
 
 #input number you want to search
 #number = input('Enter date to find\n')
