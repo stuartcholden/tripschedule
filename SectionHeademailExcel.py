@@ -31,29 +31,11 @@ inthreedays = today + 3
 context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     server.login(from_address, password)
-
-# To open the workbook
-# workbook object is created
     wb_obj = openpyxl.load_workbook(path)
- 
-# Get workbook active sheet object
-# from the active attribute
     sheet_obj = wb_obj.get_sheet_by_name('Trips')
- 
-# Cell objects also have a row, column,
-# and coordinate attributes that provide
-# location information for the cell.
- 
-# Note: The first row or
-# column integer is 1, not 0.
- 
-# Cell object is created by using
-# sheet object's cell() method.
     cell_obj = sheet_obj.cell(row = 17, column = 2)
     tripper = str(cell_obj)
- 
-# Print value of cell object
-# using the value attribute
+    
     print(cell_obj.value)
 
     coremessage = cell_obj.value
