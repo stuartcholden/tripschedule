@@ -25,13 +25,13 @@ dayleavingtext = "in two days"
 intwodays = today + 2
 inthreedays = today + 3
 
+core = ""
+
 with open("email.csv",encoding="utf-8-sig") as file2:
     reader2 = csv.DictReader(file2)
     for row2 in reader2:
         if row2['Section'] == "LIT":
-            core = ""
-            core += row2['TripID']+"three"
-            print(core)
+            core += "\n" + row2['TripID']+"three"
 
 print(core)
 
