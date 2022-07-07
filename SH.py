@@ -1,4 +1,4 @@
-import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse, n2w, tabulate
+import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse, n2w
 
 from_address = "kandalore.trippers@gmail.com"
 password = "canhnxqvxgdllpxh"
@@ -38,10 +38,8 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 subject = "Subject:" + row['Section'] + " Section Trips" + "\n\n"
                 message1 = "Hi " + row['SectionHeadName'] + ",\n\nThese are the trips in your section as of " + row['tripscheduleversion'] + ":\n"
 
-                print(row)
-
-                while row['Section'] == section:
-                    print("\n\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + str(xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")) + " to " + str(xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d")) + "\n" + "Tripper: " + row['Tripper 1'] + "\n" + "Staff: " + row['Staff 1'] + "\n" + "\nCabin: " + row['Cabin'] + "\n")
+                if row['Section'] == section:
+                    print(row['TripID'] + " - " + row['Route'])
                     message1 += "\n\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + str(xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")) + " to " + str(xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d")) + "\n" + "Tripper: " + row['Tripper 1'] + "\n" + "Staff: " + row['Staff 1'] + "\n" + "\nCabin: " + row['Cabin'] + "\n"
 
                     for i in range(1, 30):
@@ -50,10 +48,9 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                         else:
                             message1 += ""
 
-#                    print(row)
                 signoff = "\n\nSincerely,\n\nStu"
 
                 coremessage = subject+message1+signoff
                 errormessage = subject+"This is the catchall function. " + row['SectionHeadName'] + " has not received this message."
 
-        server.sendmail(from_address,"tripdirector@kandalore.com",coremessage.encode('utf-8-sig'))
+        server.sendmail(from_address,"tripdirector@kandalore.com",coremessage.encode('utf-8'))

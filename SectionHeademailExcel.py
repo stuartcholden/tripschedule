@@ -32,9 +32,9 @@ context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     server.login(from_address, password)
     wb_obj = openpyxl.load_workbook(path)
+
     sheet_obj = wb_obj.get_sheet_by_name('Trips')
     cell_obj = sheet_obj.cell(row = 17, column = 2)
-    tripper = str(cell_obj)
     
     print(cell_obj.value)
 
