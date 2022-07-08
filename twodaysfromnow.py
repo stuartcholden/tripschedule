@@ -19,7 +19,7 @@ inthreedays = today + 3
 context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     server.login(from_address, password)
-    with open("email.csv",encoding="utf-8") as file:
+    with open("email.csv",encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
             if row['Start Date'] == str(intwodays):
