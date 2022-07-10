@@ -1,7 +1,0 @@
-import openpyxl
-
-from openpyxl import load_workbook
-wb = load_workbook(filename = '../Schedule & Inventory/Schedule.xlsm',data_only=True)
-sheet_ranges = wb['Dashboard']
-print(sheet_ranges['E16'].value)
-print(wb.sheetnames)

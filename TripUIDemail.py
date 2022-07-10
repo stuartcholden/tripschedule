@@ -31,7 +31,7 @@ tripUID = input("Enter a trip UID:\n")
 context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     server.login(from_address, password)
-    with open("email.csv",encoding="utf-8") as file:
+    with open("email.csv",encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
             if row['TripID'] == tripUID:
@@ -60,8 +60,8 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
 
                 gear = " Here's what you'll need:\n\nBarrels: " + row['Barrels'] + "\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
 
-                if not row['Menstrual Bags'] == "":
-                    menstrual = "Menstrual bags: " + row['Menstrual Bags'] + "\n"
+                if not row['Paper Bags'] == "":
+                    menstrual = "Paper bags: " + row['Paper Bags'] + "\n"
                 else:
                     menstrual = ""
 
