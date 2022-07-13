@@ -120,8 +120,11 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 errormessage = subject+"This is the catchall function. " + row['Tripper 1'] + " has not received this message."
                 noleadtripper = subject + "Trip " + row['TripID'] + " does not have an email for the lead tripper."
 
-                if row['Tripper 1'].startswith('PJ'):
-                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage)
+                if row['Section'] == "PG" or row['Section'] == "JG" or row['Section'] == "PB" or row['Section'] == "JB" and row['Tripper 1'].startswith('PJ'):
+                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage.encode('utf-8'))
+
+                if row['Section'] == "PG" or row['Section'] == "JG" or row['Section'] == "PB" or row['Section'] == "JB" and not row['Tripper 1'].startswith('PJ'):
+                    server.sendmail(from_address,row['email1'],pjmessage.encode('utf-8'))
 
                 if row['email1'] == "":
                     server.sendmail(from_address,row['tripdirectoremail'],noleadtripper)
@@ -131,7 +134,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                     server.sendmail(from_address,row['email2'],coremessage)
 
                 if row['Section'] == "X2":
-                    server.sendmail(from_address,[row['email1'], row['email2']],"NOT TRUE")
+                    server.sendmail(from_address,[row['email1'],row['email2']],coremessage)
 
                 if row['Route'] == "Ghost" and args.test is False:
                     server.sendmail(from_address,row['x2directoremail'],pjmessage)
@@ -139,7 +142,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                     server.sendmail(from_address,row['tripdirectoremail'],pjmessage)
 
                 else:
-                    server.sendmail(from_address,row['tripdirectoremail'],errormessage)
+                    server.sendmail(from_address,row['tripdirectoremail'],errormessage+"\n\n\n\n"+coremessage)
 
                 if args.test is True:
                     print('Wow it worked')
