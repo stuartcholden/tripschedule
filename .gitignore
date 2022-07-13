@@ -2,4 +2,4 @@ email.csv
 *.csv
 *DS_Store
 *.swp
-gmailapppassword
+gmailapppassword.py

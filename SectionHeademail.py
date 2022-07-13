@@ -1,6 +1,4 @@
 import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse, n2w
-from tabulate import tabulate
-from termcolor import colored
 
 import gmailapppassword
 from_address = gmailapppassword.username
@@ -31,15 +29,20 @@ with open("email.csv",encoding="utf-8-sig") as file:
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
     trips = "\n\nHere are the trips in your section that have changed since the last trip schedule:"
+    LITNeeded = ""
     for row in reader:
         if row['Section'] == section and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('A'):
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
+            if int(row['Total People on Trip']) % 2 == 0:
+                LITneeded = "\nLIT Needed"
+            else:
+                LITneeded = "\nLIT Needed"
             if row['Cabin'] == "0" or row['Cabin'] == 0 or row['Cabin'] == "":
                 cabin = ""
             else:
                 cabin = "\n" + row['Cabin'] + ":"
-            trips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper 1'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + "\n" + cabin  + "\n"
+            trips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper 1'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + LITNeeded + "\n" + cabin  + "\n"
             for i in range(1, 30):
                 if row['Camper ' + str(i)] != "":
                     trips += row['Camper ' + str(i)] + "\n"
@@ -50,10 +53,15 @@ with open("email.csv",encoding="utf-8-sig") as file:
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
     unchangedtrips = "\n\nAnd these are the trips in your section that have not changed since the last trip schedule:"
+    unchangedLITNeeded = ""
     for row in reader:
         if row['Section'] == section and row['Changed Since Last Version'] == "" and row['Session'].startswith('A'):
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
+            if int(row['Total People on Trip']) % 2 == 0:
+                unchangedLITneeded = "\nLIT Needed"
+            else:
+                unchangedLITneeded = "\nLIT Needed"
             if row['Cabin'] == "0" or row['Cabin'] == 0 or row['Cabin'] == "":
                 cabin = ""
             else:
