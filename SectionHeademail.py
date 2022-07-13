@@ -2,10 +2,10 @@ import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse, n2w
 from tabulate import tabulate
 from termcolor import colored
 
-from_address = "kandalore.trippers@gmail.com"
-credentials = open("gmailapppassword", mode='rt', encoding='utf-8')
-print(credentials.read())
-password = credentials.read() 
+import gmailapppassword
+from_address = gmailapppassword.username
+password = gmailapppassword.password
+
 
 now = datetime.datetime.now()
 exceltup = (now.year, now.month, now.day)
@@ -67,9 +67,7 @@ with open("email.csv",encoding="utf-8-sig") as file:
 
 
 context = ssl.create_default_context()
-password = credentials.read()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-    print(password + "ASDASDASD")
     server.login(from_address,password)
     coremessage = subject+standardmessage+trips+unchangedtrips+signoff
     server.sendmail(from_address,to_address,coremessage.encode('utf-8'))
