@@ -43,7 +43,17 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     staff2 = ""
 
-                gear = " Here's what you'll need:\n\nBarrels: " + row['Barrels'] + "\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
+                if not row['PJ Helper'] == "":
+                    pjhelper = " " + row['PJ Helper'] + " will help you pack."
+                else:
+                    pjhelper = ""
+
+                if row['Barrels'] == "0":
+                    barrels = ""
+                else:
+                    barrels = "\nBarrels: " + row['Barrels']
+
+                gear = " Here's what you'll need:\n" + barrels + "\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
 
                 if not row['Paper Bags'] == "":
                     paperbags = "Paper bags: " + row['Paper Bags'] + "\n"
@@ -80,6 +90,11 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     money = ""
 
+                if not row['Trip Notes'] == "":
+                    notes = "\nNotes: " + row['Trip Notes'] + "\n"
+                else:
+                    notes = ""
+
                 campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\n" + row['Cabin'] + "\n\n"
 
                 for i in range(1, 30):
@@ -93,18 +108,17 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     signoff = "\n\nSincerely,\n\nStu"
 
-                pjmessage = subject+message1+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+campers+signoff
-                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+campers+signoff
+                pjmessage = subject+message1+pjhelper+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+notes+campers+signoff
+                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+notes+campers+signoff
+                expmessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+money+notes+campers+signoff
 
                 if row['email1'] == "":
                     server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
                 if row['Section'] == "Exp":
-                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
+                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage.encode('utf-8'))
                 if row['Section'] == "X2":
-                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage)
-                if row['Route'] == "Ghost":
-                    server.sendmail(from_address,"michaelseaboyer@hotmail.com",pjmessage)
+                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage.encode('utf-8'))
                 if row['Section'] == "PG" or row['Section'] == "JG" or row['Section'] == "PB" or row['Section'] == "JB":
-                    server.sendmail(from_address,[row['email1'], row['email2']],pjmessage)
+                    server.sendmail(from_address,[row['email1'], row['email2'], row['SectionHeadEmail'], row['DirectorofCampLifeEmail']],pjmessage.encode('utf-8'))
                 else:
                     server.sendmail(from_address,row['email1'],coremessage.encode('utf-8'))
