@@ -19,7 +19,7 @@ with open("email.csv",encoding="utf-8-sig") as file:
     for row in reader:
         if row['International Section'] == "IL":
             to_address = row['InternationalLiaisonEmail']
-            subject = "Subject:" + row['Section'] + " Section Trips" + "\n\n"
+            subject = "Subject: Trips with International Campers" + "\n\n"
             standardmessage = "Hi " + row['InternationalLiaisonName'] + ","
             signoff = "\n\nSincerely,\n\nStu"
 
@@ -29,7 +29,7 @@ with open("email.csv",encoding="utf-8-sig") as file:
     trips = "\n\nHere are the trips in your section that have changed since the last trip schedule:"
     LITneeded = ""
     for row in reader:
-        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('A'):
+        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
@@ -53,7 +53,7 @@ with open("email.csv",encoding="utf-8-sig") as file:
     unchangedtrips = "\n\nAnd these are the trips in your section that have not changed since the last trip schedule:"
     unchangedLITneeded = ""
     for row in reader:
-        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "" and row['Session'].startswith('A'):
+        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
@@ -67,7 +67,6 @@ with open("email.csv",encoding="utf-8-sig") as file:
             unchangedtrips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper 1'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + unchangedLITneeded + "\n" + cabin  + "\n"
             for i in range(1, 30):
                 if row['Camper ' + str(i)] != "" and "- I" in row['Camper ' +str(i)]:
-                    trips += row['Camper ' + str(i)] + "\n"
                     unchangedtrips += row['Camper ' + str(i)] + "\n"
                 else:
                     unchangedtrips += ""
