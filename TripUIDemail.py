@@ -45,25 +45,35 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
 
                 pjhelpersubject = "Subject: Help " + row['Staff1EmailName'] + " & " + row['Staff2EmailName'] + " packing out PJ trip " + row['TripID']+"\n\n"
 
-                if row['Tripper 1'].startswith('PJ'):
-                    message1 = "Hi " + row['Staff1EmailName'] + " & " + row['Staff2EmailName'] + ",\n\nYou're leading the " + row['Route'] + " in " + str(n2w.convert(daysuntildeparture)) + " days."
+                if not row['PJ Kit'] == "":
+                    message1 = "Hi " + row['Tripper1HR'] + " & " + row['Staff1EmailName'] + " & " + row['Staff2EmailName'] + " & " + row['Staff3EmailName'] + " & " + row['Staff4EmailName'] + ",\n\nYou're leading the " + row['Route'] + " in " + str(n2w.convert(daysuntildeparture)) + " days."
                 elif row['Tripper 2'] == "":
-                    message1 = "Hi " + row['Tripper 1'] + ",\n\nYou're leading the " + row['Route'] + " in " + str(n2w.convert(daysuntildeparture)) + " days."
+                    message1 = "Hi " + row['Tripper1HR'] + ",\n\nYou're leading the " + row['Route'] + " in " + str(n2w.convert(daysuntildeparture)) + " days."
                 else:
-                    message1 = "Hi " + row['Tripper 1'] + " & " + row['Tripper 2'] + ",\n\nYou're leading the " + row['Route'] + " " + "in " + str(n2w.convert(daysuntildeparture)) + " days"
+                    message1 = "Hi " + row['Tripper1HR'] + " & " + row['Tripper2HR'] + ",\n\nYou're leading the " + row['Route'] + " " + "in " + str(n2w.convert(daysuntildeparture)) + " days"
 
-                if not row['Staff1DisplayName'] == "":
-                    staff1 = " with " + row['Staff1DisplayName']
+                if not row['Staff1EmailName'] == "":
+                    staff1 = " with " + row['Staff1EmailName']
                 else:
                     staff1 = "."
 
-                if not row['Staff2DisplayName'] == "":
-                    staff2 = " & " + row['Staff2DisplayName']
+                if not row['Staff2EmailName'] == "":
+                    staff2 = " with " + row['Staff2EmailName']
                 else:
-                    staff2 = ""
+                    staff2 = "."
+
+                if not row['Staff3EmailName'] == "":
+                    staff3 = " with " + row['Staff3EmailName']
+                else:
+                    staff3 = "."
+
+                if not row['Staff4EmailName'] == "":
+                    staff4 = " with " + row['Staff4EmailName']
+                else:
+                    staff4 = "."
 
                 if not row['PJ Helper'] == "":
-                    pjhelper = " " + row['PJ Helper'] + " will help you pack.\n"
+                    pjhelper = " " + row['PJ Helper'] + " will help you pack. You'll be using row['PJ Kit'].\n"
                 else:
                     pjhelper = ""
 
@@ -99,24 +109,29 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     spot = ""
 
-                if str(row['Days on Trip']) == str(12):
+                if int(row['Days on Trip']) > 7:
                     extrasatbat = "Extra Sat Phone Battery: 1\n"
-                if int(row['Days on Trip']) >= 20:
-                    extrasatbat = "Extra Sat Phone Batteries: 2\n"
+                elif int(row['Days on Trip']) > 12:
+                    extrasatbat += "Extra Sat Phone Batteries: 2\n"
                 else:
-                    extrasatbat = "wut\n"
+                    extrasatbat = ""
 
                 if not row['Emerg Money'] == "None":
                     money = "Emergency Money: $" + row['Emerg Money'] + "\n"
                 else:
                     money = ""
 
+                if not row['Menu'] == "":
+                    menu = "Menu: " + row['Menu'] + "\n"
+                else:
+                    menu = ""
+
                 if not row['Trip Notes'] == "":
                     tripnotes = "\nAdditional Notes: " + row['Trip Notes'] + "\n"
                 else:
                     tripnotes = ""
 
-                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\n"
+                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\nCabin: " + row['Cabin'] + "\n\n"
 
                 for i in range(1, 30):
                     if row['Camper ' + str(i)] != "":

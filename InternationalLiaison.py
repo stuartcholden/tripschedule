@@ -29,7 +29,7 @@ with open("email.csv",encoding="utf-8-sig") as file:
     trips = "\n\nHere are the trips in your section that have changed since the last trip schedule:"
     LITneeded = ""
     for row in reader:
-        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
+        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('A') and not row['Trip Status'] == "Done":
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
@@ -53,7 +53,7 @@ with open("email.csv",encoding="utf-8-sig") as file:
     unchangedtrips = "\n\nAnd these are the trips in your section that have not changed since the last trip schedule:"
     unchangedLITneeded = ""
     for row in reader:
-        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
+        if row['International Section'] == "IL" and row['Changed Since Last Version'] == "" and row['Session'].startswith('A') and not row['Trip Status'] == "Done":
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":

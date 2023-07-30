@@ -13,72 +13,61 @@ dayleavingtext = "in two days"
 intwodays = today + 2
 inthreedays = today + 3
 
-section = input("Enter a Section:\n")
-#section = ['PG','JG','IG','SG','PB','JB','IG','SG','Path','LIT']
-
 
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
     for row in reader:
-        if row['Section'] == section:
-            to_address = row['SectionHeadEmail']
-            subject = "Subject:" + row['Section'] + " Section Trips" + "\n\n"
-            standardmessage = "Hi " + row['SectionHeadName'] + ","
+        if row['LITs on Trip'] == "LIT":
+            to_address = row['LITDirectorEmails']
+            subject = "Subject: Trips involving LITs" + "\n\n"
+            standardmessage = "Hi " + row['LITDirectorNames'] + ","
             signoff = "\n\nSincerely,\n\nStu"
 
 
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
-    trips = "\n\nHere are the trips in your section that have changed since the last trip schedule:"
+    trips = "\n\nHere are the trips with LITs that have changed since the last trip schedule:"
     LITneeded = ""
     for row in reader:
-        if row['Section'] == section and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
+        if row['LITs on Trip'] == "LIT" and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('A') and not row['Trip Status'] == "Done":
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
                 LITneeded = ""
             else:
                 LITneeded = "\nLIT Needed"
-            if row['PJ Helper'] == "":
-                PJHelper = ""
-            else:
-                PJHelper = "\n\n" + row['PJ Helper'] + " will help the staff get ready the day before."
             if row['Cabin'] == "0" or row['Cabin'] == 0 or row['Cabin'] == "":
                 cabin = ""
             else:
                 cabin = "\n" + row['Cabin'] + ":"
-            trips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper1HR'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + LITneeded + PJHelper + "\n" + cabin  + "\n"
-            for i in range(1, 30):
-                if row['Camper ' + str(i)] != "":
-                    trips += row['Camper ' + str(i)] + "\n"
+            trips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper1HR'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + LITneeded + "\n" + "\n" + "\nLIT(s):\n"
+            for i in range(1, 4):
+                if row['LIT ' + str(i)] != "" in row['LIT ' +str(i)]:
+                    trips += row['LIT ' + str(i)] + "\n"
                 else:
                     trips += ""
 
 
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
-    unchangedtrips = "\n\nAnd these are the trips in your section that have not changed since the last trip schedule:"
+    unchangedtrips = "\n\nAnd these are the trips with LITs that have not changed since the last trip schedule:"
     unchangedLITneeded = ""
     for row in reader:
-        if row['Section'] == section and row['Changed Since Last Version'] == "" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
+        if row['LITs on Trip'] == "LIT" and row['Changed Since Last Version'] == "" and row['Session'].startswith('A') and not row['Trip Status'] == "Done":
             xlstartdate = xlrd.xldate_as_datetime(int(row['Start Date']), 0).strftime("%b. %d")
             xlenddate = xlrd.xldate_as_datetime(int(row['End Date']), 0).strftime("%b. %d") 
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
                 unchangedLITneeded = ""
             else:
                 unchangedLITneeded = "\nLIT Needed"
-            if row['PJ Helper'] == "":
-                PJHelper = ""
-            else:
-                PJHelper = "\n\n" + row['PJ Helper'] + " will help the staff ready the day before."
             if row['Cabin'] == "0" or row['Cabin'] == 0 or row['Cabin'] == "":
                 cabin = ""
             else:
                 cabin = "\n" + row['Cabin'] + ":"
-            unchangedtrips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper1HR'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + unchangedLITneeded + PJHelper + "\n" + cabin  + "\n"
-            for i in range(1, 30):
-                if row['Camper ' + str(i)] != "":
-                    unchangedtrips += row['Camper ' + str(i)] + "\n"
+            unchangedtrips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper1HR'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + unchangedLITneeded + "\n" + "\nLIT(s):\n"
+            for i in range(1, 4):
+                if row['LIT ' + str(i)] != "" in row['LIT ' +str(i)]:
+                    unchangedtrips += row['LIT ' + str(i)] + "\n"
                 else:
                     unchangedtrips += ""
 
