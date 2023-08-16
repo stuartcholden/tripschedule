@@ -1,5 +1,8 @@
 import csv, smtplib, ssl, xlrd, openpyxl, datetime, subprocess, argparse, n2w
 
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 import gmailapppassword
 from_address = gmailapppassword.username
 password = gmailapppassword.password
@@ -21,15 +24,15 @@ with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
     for row in reader:
         if row['Section'] == section:
-            to_address = row['SectionHeadEmail']
-            subject = "Subject:" + row['Section'] + " Section Trips" + "\n\n"
+            recipients = row['SectionHeadEmail']
+            subject = row['Section'] + " Section Trips"
             standardmessage = "Hi " + row['SectionHeadName'] + ","
-            signoff = "\n\nSincerely,\n\nStu"
+            signoff = "Sincerely,<br><br>Stu"
 
 
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
-    trips = "\n\nHere are the trips in your section that have changed since the last trip schedule:"
+    changedtrips = "<br><br>Here are the trips in your section that have <i><span style=\"color:rgb(199,117,252);\">changed</span></i> since the last trip schedule:"
     LITneeded = ""
     for row in reader:
         if row['Section'] == section and row['Changed Since Last Version'] == "Yes" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
@@ -38,26 +41,26 @@ with open("email.csv",encoding="utf-8-sig") as file:
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
                 LITneeded = ""
             else:
-                LITneeded = "\nLIT Needed"
+                LITneeded = "<br>LIT Needed"
             if row['PJ Helper'] == "":
                 PJHelper = ""
             else:
-                PJHelper = "\n\n" + row['PJ Helper'] + " will help the staff get ready the day before."
+                PJHelper = "<br><br>" + row['PJ Helper'] + " will help the staff get ready the day before."
             if row['Cabin'] == "0" or row['Cabin'] == 0 or row['Cabin'] == "":
                 cabin = ""
             else:
-                cabin = "\n" + row['Cabin'] + ":"
-            trips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper1HR'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + LITneeded + PJHelper + "\n" + cabin  + "\n"
+                cabin = "<br>" + row['Cabin'] + ":"
+            changedtrips += "<br><br>" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"<br>" + xlstartdate + " to " + xlenddate + "<br>" + "Tripper: " + row['Tripper1HR'] + "<br>" + "Staff: " + row['Staff List for Trip Program'] + LITneeded + PJHelper + "<br>" + "<i>" +  cabin + "</i>"  + "<br>"
             for i in range(1, 30):
                 if row['Camper ' + str(i)] != "":
-                    trips += row['Camper ' + str(i)] + "\n"
+                    changedtrips += row['Camper ' + str(i)] + "<br>"
                 else:
-                    trips += ""
+                    changedtrips += ""
 
 
 with open("email.csv",encoding="utf-8-sig") as file:
     reader = csv.DictReader(file)
-    unchangedtrips = "\n\nAnd these are the trips in your section that have not changed since the last trip schedule:"
+    unchangedtrips = "<br><br>And these are the trips in your section that have not changed since the last trip schedule:"
     unchangedLITneeded = ""
     for row in reader:
         if row['Section'] == section and row['Changed Since Last Version'] == "" and row['Session'].startswith('B') and not row['Trip Status'] == "Done":
@@ -66,25 +69,46 @@ with open("email.csv",encoding="utf-8-sig") as file:
             if int(row['Total People on Trip']) % 2 == 0 and not row['Trip Program'] == "PJ":
                 unchangedLITneeded = ""
             else:
-                unchangedLITneeded = "\nLIT Needed"
+                unchangedLITneeded = "<br>LIT Needed"
             if row['PJ Helper'] == "":
                 PJHelper = ""
             else:
-                PJHelper = "\n\n" + row['PJ Helper'] + " will help the staff ready the day before."
+                PJHelper = "<br><br>" + row['PJ Helper'] + " will help the staff ready the day before."
             if row['Cabin'] == "0" or row['Cabin'] == 0 or row['Cabin'] == "":
                 cabin = ""
             else:
-                cabin = "\n" + row['Cabin'] + ":"
-            unchangedtrips += "\n\n" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"\n" + xlstartdate + " to " + xlenddate + "\n" + "Tripper: " + row['Tripper1HR'] + "\n" + "Staff: " + row['Staff List for Trip Program'] + unchangedLITneeded + PJHelper + "\n" + cabin  + "\n"
+                cabin = "<br>" + row['Cabin'] + ":"
+            campers = ""
             for i in range(1, 30):
                 if row['Camper ' + str(i)] != "":
-                    unchangedtrips += row['Camper ' + str(i)] + "\n"
+                    campers += row['Camper ' + str(i)] + "<br>"
                 else:
-                    unchangedtrips += ""
+                    campers == ""
+            unchangedtrips += "<br><br>" + '{:0>3}'.format(row['TripID']) + " " + row['Route'] +"<br>" + xlstartdate + " to " + xlenddate + "<br>" + "Tripper: " + row['Tripper1HR'] + "<br>" + "Staff: " + row['Staff List for Trip Program'] + unchangedLITneeded + PJHelper + "<br>" + "<span style=\"color:rgb(199,117,252);\">" + cabin + "</span>" + "<br>" + "<span style=\"color:violet;\">" + campers + "</span>"
 
+message = MIMEMultipart("alternative")
+message["Subject"] = subject
+message["From"] = from_address
+message["To"] = recipients
+
+html = """\
+<html>
+  <body>
+    <p>{standardmessage}<br>
+       {changedtrips}<br>
+       {unchangedtrips}<br>
+       {signoff}
+    </p>
+  </body>
+</html>
+""".format(**locals())
+
+part1 = MIMEText(html, "html")
+
+message.attach(part1)
 
 context = ssl.create_default_context()
 with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     server.login(from_address,password)
-    coremessage = subject+standardmessage+trips+unchangedtrips+signoff
-    server.sendmail(from_address,to_address,coremessage.encode('utf-8'))
+#    coremessage = subject+standardmessage+trips+unchangedtrips+signoff
+    server.sendmail("tripdirector@kandalore.com",str.split(recipients),message.as_string())

@@ -40,9 +40,9 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         df = pd.read_excel('/Users/stu/Documents/Tripping/Schedule.xlsm', sheet_name='Trips')
 
 
-        for row in df['TripID']:
+        for row in df['0']:
             if int(row) == int(tripUID):
-                subject = "Tripper is " + df.loc[df['TripID'] == int(tripUID)]['Tripper1HR'].values
+                subject = "Tripper is " + df.loc[df['0'] == int(tripUID)]['Tripper1HR'].values
                 print(subject)
 #    subject = df[df['TripID'] == int(tripUID)]
 #    print(subject)

@@ -1,5 +1,8 @@
 import csv, smtplib, ssl, xlrd, datetime, subprocess
 
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 import gmailapppassword
 from_address = gmailapppassword.username
 password = gmailapppassword.password
@@ -41,7 +44,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 if not row['Staff2EmailName'] == "":
                     staff2 = " & " + row['Staff2EmailName']
                 else:
-                    staff2 = ""
+                    staff2 = "."
 
                 if not row['PJ Helper'] == "":
                     pjhelper = ". " + row['PJ Helper'] + " will help you pack"
@@ -53,7 +56,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     barrels = "\nBarrels: " + row['Barrels']
 
-                gear = ". Here's what you'll need:\n" + barrels + "\nDish kits: " + row['Dish Kits'] + "\nAquatabs: " + row['Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
+                gear = "\n\nHere's what you'll need:\n" + barrels + "\nDish kits: " + row['Dish Kits'] + "\nAquatab kits: " + row['Packs of Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
 
                 if not row['Paper Bags'] == "":
                     paperbags = "Paper bags: " + row['Paper Bags'] + "\n"
@@ -120,17 +123,34 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     signoff = "\n\nSincerely,\n\nStu"
 
+                coremessage = MIMEMultipart("alternative")
+                coremessage["Subject"] = subject
+                coremessage["From"] = from_address
+                coremessage["To"] = row['email1']
+
+                html = """\
+                <html>
+                  <body>
+                    <p>{message1}<br>
+                       {signoff}
+                    </p>
+                  </body>
+                </html>
+                """.format(**locals())
+
+                part1 = MIMEText(html, "html")
+
+                coremessage.attach(part1)
+
                 pjmessage = subject+message1+pjhelper+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+notes+campers+signoff
-                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+menu+notes+campers+signoff
+#                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+menu+notes+campers+signoff
                 expmessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+menu+notes+campers+signoff
 
                 if row['email1'] == "":
-                    server.sendmail(from_address,"tripdirector@kandalore.com","Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
-                if row['Section'] == "Exp":
+                    server.sendmail(from_address,row['tripdirectoremail'],"Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
+                if row['Trip Program'] == "X":
                     server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage.encode('utf-8'))
-                if row['Section'] == "X2":
-                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage.encode('utf-8'))
-                if row['Section'] == "PG" or row['Section'] == "JG" or row['Section'] == "PB" or row['Section'] == "JB":
+                if row['Trip Program'] == "PJ":
                     server.sendmail(from_address,[row['email1'], row['email2'], row['SectionHeadEmail'], row['DirectorofCampLifeEmail']],pjmessage.encode('utf-8'))
                 else:
-                    server.sendmail(from_address,row['email1'],coremessage.encode('utf-8'))
+                    server.sendmail(from_address,row['email1'],coremessage.as_string())
