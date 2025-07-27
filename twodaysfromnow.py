@@ -12,10 +12,11 @@ password = gmailapppassword.password
 now = datetime.datetime.now()
 exceltup = (now.year, now.month, now.day)
 today = int(xlrd.xldate.xldate_from_date_tuple((exceltup),0))
-tomorrow = today + 1
+tomorrow = today - 8
 dayleavingtext = "in two days"
 intwodays = today + 2
 inthreedays = today + 3
+infourdays = today + 4
 
 
 context = ssl.create_default_context()
@@ -24,114 +25,126 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
     with open("email.csv",encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row['Start Date'] == str(intwodays):
+            if row['Start Date'] == str(tomorrow):
 
-                subject = "Subject: Trip " + row['TripID'] + ", " + dayleavingtext + "\n\n"
+                subject = "Trip " + row['TripID'] + ", " + dayleavingtext
 
 
-                if row['Tripper 1'].startswith('PJ'):
-                    message1 = "Hi " + row['Staff1EmailName'] + " & " + row['Staff2EmailName'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext + "."
-                elif row['Tripper 2'] == "":
-                    message1 = "Hi " + row['Tripper1HR'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext
-                else:
-                    message1 = "Hi " + row['Tripper1HR'] + " & " + row['Tripper2HR'] + ",\n\nYou're leading the " + row['Route'] + " " + dayleavingtext
+                if row['Trip Program'] == 'Back Lakes':
+                    message1 = "Hi " + row['Tripper1HR'] + " & " + row['Staff1EmailName'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + dayleavingtext + "."
+                if row['Trip Program'] == 'Camper Trips':
+                    message1 = "Hi " + row['DBTrip Leaders'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + dayleavingtext + " with the " + row['Cabin'] + "."
+                elif row['Trip Program'] == 'Leadership':
+                    message1 = "Hi " + row['DBTrip Leaders'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + " " + dayleavingtext + "."
+#                else:
+#                    message1 = "Hi " + row['Tripper1HR'] + " & " + row['Tripper2HR'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + " " + dayleavingtext
 
                 if not row['Staff1EmailName'] == "":
-                    staff1 = " with " + row['Staff1EmailName']
+                    staff1 = " with " + row['Staff1EmailName'] + "."
                 else:
-                    staff1 = "."
+                    staff1 = ""
 
                 if not row['Staff2EmailName'] == "":
-                    staff2 = " & " + row['Staff2EmailName']
+                    staff2 = " & " + row['Staff2EmailName'] + "."
                 else:
-                    staff2 = "."
+                    staff2 = ""
 
-                if not row['PJ Helper'] == "":
-                    pjhelper = ". " + row['PJ Helper'] + " will help you pack"
-                else:
-                    pjhelper = ""
+#                if not row['PJ Helper'] == "":
+#                    pjhelper = ". " + row['PJ Helper'] + " will help you pack"
+#                else:
+#                    pjhelper = ""
 
                 if row['Barrels'] == "0":
                     barrels = ""
                 else:
-                    barrels = "\nBarrels: " + row['Barrels']
+                    barrels = "<br>Barrels: " + row['Barrels']
 
-                gear = "\n\nHere's what you'll need:\n" + barrels + "\nDish kits: " + row['Dish Kits'] + "\nAquatab kits: " + row['Packs of Aquatabs'] + "\nBoats: " + row['Boats'] + "\nTents: " + row['Tents'] + "\nWhistles: " + row['Whistles'] + "\nRolls of toilet paper (pack the extra one seperately to avoid disaster): " + row['Toilet Paper']  + "\n"
+                gear = "<br><br>Here's what you'll need:<br>" + barrels + "<br>Dish kits: " + row['Green Scrubbies'] + "<br>Aquatab kits: " + row['Packs of Aquatabs'] + "<br>Boats: " + row['Boats'] + "<br>Tents: " + row['Tents'] + "<br>Whistles: " + row['Whistles'] + "<br>Rolls of toilet paper (pack the extra one seperately to avoid" + "<span style=\"color:crimson;\"> disaster</span>" + "): " + row['Toilet Paper']  + "<br>"
 
                 if not row['Paper Bags'] == "":
-                    paperbags = "Paper bags: " + row['Paper Bags'] + "\n"
+                    paperbags = "Paper bags: " + row['Paper Bags'] + "<br>"
                 else:
                     paperbags = ""
 
                 if not row['Booking Reference'] == "":
-                    bookingreference = "Booking Reference Number: " + row['Booking Reference'] + "\n"
+                    bookingreference = "Booking Reference Number: " + row['Booking Reference'] + "<br>"
                 else:
                     bookingreference = ""
 
                 if not row['Sites'] == "":
-                    sites = "Sites: " + row['Sites'] + "\n"
+                    sites = "Sites: " + row['Sites'] + "<br>"
                 else:
                     sites = ""
 
                 if not row['Drop Off Required'] == "":
-                    dropoff = "Drop off: " + row['Drop Off Required'] + "\n"
+                    dropoff = "Drop off: " + row['DBTrip Drop Off Driver'] + "<br>"
                 else:
                     dropoff = ""
 
                 if not row['Pick Up Required'] == "":
-                    pickup = "Pick up: " + row['Pick Up Required'] + "\n"
+                    pickup = "Pick up: " + row['DBTrip Pick Up Driver'] + "<br>"
                 else:
                     pickup = "" 
 
                 if not row['SPOT'] == "":
-                    spot = "SPOT: " + row['SPOT'] + "\n"
+                    spot = "SPOT: " + row['SPOT'] + "<br>"
                 else:
                     spot = ""
 
                 if int(row['Days on Trip']) > 7:
-                    extrasatbat = "Extra Sat Phone Battery: 1\n"
+                    extrasatbat = "Extra Sat Phone Battery: 1<br>"
                 elif int(row['Days on Trip']) > 12:
-                    extrasatbat += "Extra Sat Phone Batteries: 2\n"
+                    extrasatbat += "Extra Sat Phone Batteries: 2<br>"
                 else:
                     extrasatbat = ""
 
                 if not row['Emerg Money'] == "":
-                    money = "Emergency Money: " + row['Emerg Money'] + "\n"
+                    money = "Emergency Money: " + row['Emerg Money'] + "<br>"
                 else:
                     money = ""
 
                 if not row['Menu'] == "":
-                    menu = "Menu: " + row['Menu'] + "\n"
+                    menu = "Menu: " + row['Menu'] + "<br>"
                 else:
                      menu = ""
 
                 if not row['Trip Notes'] == "":
-                    notes = "\nNotes: " + row['Trip Notes'] + "\n"
+                    notes = "<br>Notes: " + row['Trip Notes'] + "<br>"
                 else:
                     notes = ""
 
-                campers = "\n\nHere are your campers, as of Trip Schedule " + row['tripscheduleversion'] + ":\n\nCabin: " + row['Cabin'] + "\n\n"
-
-                for i in range(1, 30):
-                    if row['Camper ' + str(i)] != "":
-                        campers += row['Camper ' + str(i)] + "\n"
-                    else:
-                        campers += ""
+#                for i in range(1, 30):
+#                    if row['Camper ' + str(i)] != "":
+#                        campers += row['Camper ' + str(i)] + "<br>"
+#                    else:
+#                        campers += ""
 
                 if row['Praise be to Cthulhu, devourer of young love and purveyor of discounted leather jackets'] == "yes":
-                    signoff = "\n\nPraise be to Cthulhu, devourer of young love and purveryor of fine discounted leather jackets,\n\nStu"
+                    signoff = "<br><br>Praise be to Cthulhu, devourer of young love and purveryor of fine discounted leather jackets,<br><br>Stu"
                 else:
-                    signoff = "\n\nSincerely,\n\nStu"
+                    signoff = "<br><br>Sincerely,<br><br>Stu"
 
-                coremessage = MIMEMultipart("alternative")
-                coremessage["Subject"] = subject
-                coremessage["From"] = from_address
-                coremessage["To"] = row['email1']
+                campertripsmessage = MIMEMultipart("alternative")
+                campertripsmessage["Subject"] = subject
+                campertripsmessage["From"] = from_address
+                campertripsmessage["To"] = row['email1']
 
                 html = """\
                 <html>
                   <body>
-                    <p>{message1}<br>
+                    <p>
+                       {message1}
+                       {gear}
+                       {paperbags}
+                       {bookingreference}
+                       {sites}
+                       {dropoff}
+                       {pickup}
+                       {spot}
+                       {extrasatbat}
+                       {money}
+                       {menu}
+                       {notes}
                        {signoff}
                     </p>
                   </body>
@@ -140,17 +153,77 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
 
                 part1 = MIMEText(html, "html")
 
-                coremessage.attach(part1)
+                campertripsmessage.attach(part1)
 
-                pjmessage = subject+message1+pjhelper+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+notes+campers+signoff
+                lsmessage = MIMEMultipart("alternative")
+                lsmessage["Subject"] = subject
+                lsmessage["From"] = from_address
+                lsmessage["To"] = row['email1']
+
+                html = """\
+                <html>
+                  <body>
+                       {message1}
+                       {gear}
+                       {paperbags}
+                       {bookingreference}
+                       {sites}
+                       {dropoff}
+                       {pickup}
+                       {menu}
+                       {notes}
+                       {signoff}
+                    </p>
+                  </body>
+                </html>
+                """.format(**locals())
+
+                part1 = MIMEText(html, "html")
+
+                lsmessage.attach(part1)
+                
+                pjmessage = MIMEMultipart("alternative")
+                pjmessage["Subject"] = subject
+                pjmessage["From"] = from_address
+                pjmessage["To"] = row['email1']
+
+                html = """\
+                <html>
+                  <body>
+                       {gear}
+                       {paperbags}
+                       {bookingreference}
+                       {sites}
+                       {dropoff}
+                       {pickup}
+                       {spot}
+                       {extrasatbat}
+                       {money}
+                       {menu}
+                       {notes}
+                       {signoff}
+                    </p>
+                  </body>
+                </html>
+                """.format(**locals())
+
+                part1 = MIMEText(html, "html")
+
+                pjmessage.attach(part1)
+
+#                pjmessage = subject+message1+pjhelper+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+notes+campers+signoff
 #                coremessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+menu+notes+campers+signoff
-                expmessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+menu+notes+campers+signoff
+#                expmessage = subject+message1+staff1+staff2+gear+paperbags+bookingreference+sites+dropoff+pickup+spot+extrasatbat+money+menu+notes+campers+signoff
 
                 if row['email1'] == "":
                     server.sendmail(from_address,row['tripdirectoremail'],"Subject: Trip " + row['TripID'] + " does not have an email for the lead tripper\n\nHopefully there's at least a tripper.")
-                if row['Trip Program'] == "X":
-                    server.sendmail(from_address,row['email1']+", "+row['email2'],expmessage.encode('utf-8'))
-                if row['Trip Program'] == "PJ":
-                    server.sendmail(from_address,[row['email1'], row['email2'], row['SectionHeadEmail'], row['DirectorofCampLifeEmail']],pjmessage.encode('utf-8'))
-                else:
-                    server.sendmail(from_address,row['email1'],coremessage.as_string())
+                if row['Trip Program'] == "Leadership":
+                    server.sendmail(from_address,[row['email1'], row['email2']],lsmessage.as_string())
+                if row['Trip Program'] == "Back Lakes" and row['Lead by a Tripper'] == "No":
+                    server.sendmail(from_address,[row['email1'], row['email2'],],pjmessage.as_string())
+                if row['Trip Program'] == "Back Lakes" and row['Lead by a Tripper'] == "Yes":
+                    server.sendmail(from_address,row['email1'],pjmessage.as_string())
+                if row['Lead by an X2'] == "Yes":
+                    server.sendmail(from_address,[row['email1'], row['x2directoremail']],pjmessage.as_string())
+                if row['Trip Program'] == "Camper Trips":
+                    server.sendmail(from_address,row['email1'],campertripsmessage.as_string())
