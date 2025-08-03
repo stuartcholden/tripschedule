@@ -33,7 +33,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 if row['Trip Program'] == 'Back Lakes':
                     message1 = "Hi " + row['Tripper1HR'] + " & " + row['Staff1EmailName'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + dayleavingtext + "."
                 if row['Trip Program'] == 'Camper Trips':
-                    message1 = "Hi " + row['DBTrip Leaders'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + dayleavingtext + " with the " + row['Cabin'] + "."
+                    message1 = "Hi " + row['PETrip Leaders'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + dayleavingtext + " with the " + row['Cabin'] + "."
                 elif row['Trip Program'] == 'Leadership':
                     message1 = "Hi " + row['DBTrip Leaders'] + ",<br><br>You're leading the " + "<span style=\"color:darkviolet;\">" + row['Route'] + "</span> " + " " + dayleavingtext + "."
 #                else:
@@ -59,7 +59,7 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     barrels = "<br>Barrels: " + row['Barrels']
 
-                gear = "<br><br>Here's what you'll need:<br>" + barrels + "<br>Dish kits: " + row['Green Scrubbies'] + "<br>Aquatab kits: " + row['Packs of Aquatabs'] + "<br>Boats: " + row['Boats'] + "<br>Tents: " + row['Tents'] + "<br>Whistles: " + row['Whistles'] + "<br>Rolls of toilet paper (pack the extra one seperately to avoid" + "<span style=\"color:crimson;\"> disaster</span>" + "): " + row['Toilet Paper']  + "<br>"
+                gear = "<br><br>Here's what you'll need:<br>" + barrels + "<br>Green Scrubbies: " + row['Green Scrubbies'] + "<br>Steel Wool: " + row['Steel Wool'] + "<br>Aquatab packs of 50: " + row['Packs of Aquatabs'] + "<br>Boats: " + row['Boats'] + "<br>Tents: " + row['Tents'] + "<br>Whistles: " + row['Whistles'] + "<br>Rolls of toilet paper (pack the extra one seperately to avoid" + "<span style=\"color:crimson;\"> disaster</span>" + "): " + row['Toilet Paper']  + "<br>"
 
                 if not row['Paper Bags'] == "":
                     paperbags = "Paper bags: " + row['Paper Bags'] + "<br>"
@@ -86,15 +86,18 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 else:
                     pickup = "" 
 
-                if not row['SPOT'] == "":
-                    spot = "SPOT: " + row['SPOT'] + "<br>"
+                if not row['SPOT or InReach'] == "":
+                    spot = "SPOT or InReach: " + row['SPOT or InReach'] + "<br>"
                 else:
                     spot = ""
 
-                if int(row['Days on Trip']) > 7:
-                    extrasatbat = "Extra Sat Phone Battery: 1<br>"
-                elif int(row['Days on Trip']) > 12:
-                    extrasatbat += "Extra Sat Phone Batteries: 2<br>"
+                if not row['Phone'] == "":
+                    phone = "Phone: " + row['Phone'] + " (" + row['phone_numbers'] + ")" + "<br>"
+                else:
+                    phone = ""
+
+                if not row['extra_sat_bat'] == "":
+                    extrasatbat = "Extra Sat Phone Batteries: " + row['extra_sat_bat'] + "<br>"
                 else:
                     extrasatbat = ""
 
@@ -136,14 +139,15 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                        {message1}
                        {gear}
                        {paperbags}
+                       {phone}
+                       {extrasatbat}
+                       {spot}
+                       {money}
+                       <br><br>Logistics<br><br>
                        {bookingreference}
                        {sites}
                        {dropoff}
                        {pickup}
-                       {spot}
-                       {extrasatbat}
-                       {money}
-                       {menu}
                        {notes}
                        {signoff}
                     </p>
