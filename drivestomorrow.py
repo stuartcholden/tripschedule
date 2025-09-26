@@ -14,36 +14,35 @@ now = datetime.datetime.now()
 exceltup = (now.year, now.month, now.day)
 today = int(xlrd.xldate.xldate_from_date_tuple((exceltup),0))
 tomorrow = today + 1
-dayleavingtext = "in two days"
+dayleavingtext = "tomorrow"
 intwodays = today + 2
 inthreedays = today + 3
+infourdays = today + 4
 
-input_file = open('drives.csv')
+input_file = open('/Users/stu/git/tripschedule/drives.csv')
 csv_reader = csv.DictReader(input_file)
 driverset = set()
 for row in csv_reader:
-    if row['Driver'] != "" and row ['Driver'] != "0"and row['Date of Drive'] >= str(today):
+    if row['Driver'] != "" and row['Driver'] != "0" and row['Date of Drive'] == str(tomorrow):
         driverset.add(row['Driver'])
 print(driverset)
 
-
 for x in driverset:
-    with open("drives.csv",encoding="utf-8-sig") as file:
+    with open("/Users/stu/git/tripschedule/drives.csv",encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
             if row['Driver'] == x:
                 recipients = row['Driver Email']
-                subject = "Drive Calendar for D Session"
+                subject = "Your Drive Tomorrow"
                 standardmessage = "Hi " + row['Driver'] + ","
                 signoff = "In camp friendship,<br><br>Stu"
 
 
-    with open("drives.csv",encoding="utf-8-sig") as file:
+    with open("/Users/stu/git/tripschedule/drives.csv",encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
-        readersorted = sorted(reader, key=lambda row: (row['Date of Drive'],row['Type']))
-        drives = "<br>Here are the drives I have you scheduled for. Please let me know if there's any issues or mistakes."
-        for row in readersorted:
-            if row['Driver'] == x and row['Past'] != "Past":
+        drives = "<br>Here are your drive details for tomorrow:" 
+        for row in reader:
+            if row['Driver'] == x and row['Date of Drive'] == str(tomorrow):
                 xldate = xlrd.xldate_as_datetime(int(row['Date of Drive']), 0).strftime("%b. %d")
 
                 if row['Location Link'] != "":
@@ -80,7 +79,6 @@ for x in driverset:
                     van = "Van not set yet"
 
                 if row['Notes'] != "" and row['Notes'] != "0" and row['Notes'] != 0:
-                    notes = "<br>Notes: " + row['Notes']
                     notes = "<br>Notes: " + "<i><span style=\"color:rgb(252,81,170);\">" + row['Notes'] + "</span></i>"
                 else:
                     notes = ""
